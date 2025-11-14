@@ -6,7 +6,15 @@
 sudo apt-get update
 
 # Install necessary packages
-sudo apt-get install -y aptly nginx
+sudo apt-get install -y gnupg unzip nginx
+
+# Install Aptly
+cd /tmp
+wget https://github.com/aptly-dev/aptly/releases/download/v1.6.2/aptly_1.6.2_linux_amd64.zip
+unzip aptly_1.6.2_linux_amd64.zip
+mv aptly_1.6.2_linux_amd64/aptly /usr/local/bin/
+chmod +x /usr/local/bin/aptly
+aptly version
 
 # Configure Aptly
 sudo mkdir -p /var/aptly

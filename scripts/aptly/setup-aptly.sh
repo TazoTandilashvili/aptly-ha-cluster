@@ -1,39 +1,31 @@
 #!/bin/bash
 
-# This script sets up Aptly for managing Ubuntu package repositories.
+# This script installs and configures Aptly on Ubuntu 22.04
 
-# Update package list
+set -e
+
+echo "=== Installing Aptly and Dependencies ==="
+
+# Update system
 sudo apt-get update
+sudo apt-get install -y gnupg unzip nginx
 
 # Install Aptly
-sudo apt-get install -y aptly
+echo "Installing Aptly v1.6.2..."
+cd /tmp
+wget https://github.com/aptly-dev/aptly/releases/download/v1.6.2/aptly_1.6.2_linux_amd64.zip
+unzip aptly_1.6.2_linux_amd64.zip
+mv aptly_1.6.2_linux_amd64/aptly /usr/local/bin/
+chmod +x /usr/local/bin/aptly
+aptly version
 
-# Create necessary directories for Aptly
-mkdir -p /var/aptly/{db,public,private}
+echo "=== Creating Aptly User ==="
 
-# Set permissions
+# Create Aptly user
+sudo useradd -r -m -d /home/aptly -s /usr/sbin/nologin -c "Aptly Repository User" aptly || true
+
+# Create directories
+sudo mkdir -p /var/aptly/tmp
 sudo chown -R aptly:aptly /var/aptly
 
-# Create default configuration file
-cat <<EOL | sudo tee /etc/aptly.conf
-{
-    "rootDir": "/var/aptly",
-    "database": {
-        "type": "sqlite3",
-        "file": "/var/aptly/db/aptly.db"
-    },
-    "public": {
-        "url": "http://yourdomain.com/aptly",
-        "path": "/var/aptly/public"
-    },
-    "private": {
-        "url": "http://yourdomain.com/aptly/private",
-        "path": "/var/aptly/private"
-    }
-}
-EOL
-
-# Initialize Aptly
-sudo -u aptly aptly db create
-
-echo "Aptly setup completed successfully."
+echo "=== Aptly Installation Complete ==="
