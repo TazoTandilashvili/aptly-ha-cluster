@@ -305,7 +305,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Authors
 
-- **Your Name** - Initial work
+- **Tazo Tandilashvili** - Initial work
 
 ## 🙏 Acknowledgments
 
@@ -313,22 +313,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [HAProxy](http://www.haproxy.org/) - Reliable, high performance load balancer
 - [Keepalived](https://www.keepalived.org/) - Load balancing and high availability
 - Ubuntu community for the excellent documentation
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/aptly-ha-cluster/issues)
-- **Documentation**: [Wiki](https://github.com/yourusername/aptly-ha-cluster/wiki)
-- **Email**: support@yourdomain.com
-
-## 🗺️ Roadmap
-
-- [ ] Ubuntu 24.04 (Noble) support
-- [ ] Debian repository support
-- [ ] Ansible playbooks for automated deployment
-- [ ] Docker containerization
-- [ ] Prometheus monitoring integration
-- [ ] Grafana dashboards
-- [ ] Automated backup/restore procedures
 
 ---
 
