@@ -10,8 +10,8 @@ deploy_node() {
     local node_ip=$1
     echo "Deploying node at IP: $node_ip"
 
-    # Example commands to deploy the node
-    ssh root@$node_ip "apt-get update && apt-get install -y aptly"
+    # Install Aptly
+    ssh root@$node_ip "cd /tmp && wget https://github.com/aptly-dev/aptly/releases/download/v1.6.2/aptly_1.6.2_linux_amd64.zip && unzip aptly_1.6.2_linux_amd64.zip && mv aptly_1.6.2_linux_amd64/aptly /usr/local/bin/ && chmod +x /usr/local/bin/aptly && aptly version"
     ssh root@$node_ip "aptly mirror create -architectures=amd64 my-mirror http://archive.ubuntu.com/ubuntu/ jammy main universe"
     ssh root@$node_ip "aptly publish mirror my-mirror"
 }

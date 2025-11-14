@@ -55,7 +55,7 @@ A production-ready, highly available Ubuntu package repository infrastructure us
 - Root access to all servers
 - Network connectivity between all nodes
 - DNS: `ubuntu.yourdomain.com` → `10.80.11.140` (VIP)
-- ~GB disk space per Aptly node
+- ~350 GB disk space per Aptly node
 - Internet access for initial mirror sync
 
 ## 🚀 Quick Start
