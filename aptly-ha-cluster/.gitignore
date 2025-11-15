@@ -1,0 +1,44 @@
+# Configuration files with sensitive data
+config/cluster.conf
+*.conf
+!*.conf.example
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Backup files
+*.bak
+*.backup
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+
+# Test data
+test-data/
+
+# Distribution files
+*.tar.gz
+*.zip
+dist/
+
+# Environment files
+.env
+.env.local

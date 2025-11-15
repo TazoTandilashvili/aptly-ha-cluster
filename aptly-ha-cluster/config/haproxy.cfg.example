@@ -1,0 +1,54 @@
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+
+# Statistics page
+listen stats
+    bind *:8080
+    stats enable
+    stats uri /stats
+    stats refresh 30s
+    stats auth admin:changeme123
+
+# Ubuntu Repository Frontend
+frontend ubuntu_repo
+    bind *:80
+    default_backend ubuntu_servers
+    option httplog
+    log global
+
+# Ubuntu Repository Backend
+backend ubuntu_servers
+    balance roundrobin
+    option httpchk GET /dists/jammy/Release
+
+    # Tier 1: Both Aptly servers active (load balanced)
+    server node1-aptly 10.80.11.143:80 check inter 5000 rise 2 fall 3 weight 100
+    server node2-aptly 10.80.11.144:80 check inter 5000 rise 2 fall 3 weight 100
+
+    # Tier 2: Proxy servers (only if BOTH Aptly nodes fail)
+    server node1-proxy 10.80.11.145:80 check inter 5000 rise 2 fall 3 weight 50 backup
+    server node2-proxy 10.80.11.146:80 check inter 5000 rise 2 fall 3 weight 50 backup
+
+    # Health check settings
+    http-check send meth GET uri /dists/jammy/Release ver HTTP/1.1 hdr Host ubuntu.yourdomain.com
+    http-check expect status 200
+
+    # Timeouts for large package downloads
+    timeout server 300s
+    timeout connect 10s

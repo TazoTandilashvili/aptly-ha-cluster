@@ -1,0 +1,195 @@
+#!/bin/bash
+# Aptly HA Cluster Configuration
+# Copy this file to cluster.conf and customize for your environment
+
+#=============================================================================
+# NETWORK CONFIGURATION
+#=============================================================================
+
+# Virtual IP (VIP) - Single entry point for clients
+VIP="10.80.11.140"
+VIP_NETMASK="24"
+VIP_INTERFACE="ens160"
+
+# HAProxy Load Balancer Nodes
+HAPROXY_MASTER_IP="10.80.11.141"
+HAPROXY_BACKUP_IP="10.80.11.142"
+HAPROXY_STATS_PORT="8080"
+HAPROXY_STATS_USER="admin"
+HAPROXY_STATS_PASS="changeme123"
+
+# Aptly Repository Nodes (Primary Tier)
+APTLY_NODE1_IP="10.80.11.143"
+APTLY_NODE2_IP="10.80.11.144"
+
+# Nginx Proxy Nodes (Backup Tier)
+PROXY_NODE1_IP="10.80.11.145"
+PROXY_NODE2_IP="10.80.11.146"
+
+#=============================================================================
+# DOMAIN AND DNS
+#=============================================================================
+
+DOMAIN="ubuntu.yourdomain.com"
+# Ensure DNS record points to VIP: ubuntu.yourdomain.com -> 10.80.11.140
+
+#=============================================================================
+# APTLY CONFIGURATION
+#=============================================================================
+
+# Ubuntu version to mirror
+UBUNTU_VERSION="jammy"  # Ubuntu 22.04 LTS
+UBUNTU_ARCH="amd64"
+
+# Mirror sources
+UBUNTU_MAIN_MIRROR="http://archive.ubuntu.com/ubuntu"
+UBUNTU_SECURITY_MIRROR="http://security.ubuntu.com/ubuntu"
+
+# Alternative mirrors (for better performance in certain regions)
+# UBUNTU_MAIN_MIRROR="http://ge.archive.ubuntu.com/ubuntu"
+# UBUNTU_SECURITY_MIRROR="http://ge.archive.ubuntu.com/ubuntu"
+
+# Components to mirror
+UBUNTU_COMPONENTS="main universe"
+
+# Distributions to mirror
+UBUNTU_DISTS="jammy jammy-updates jammy-security"
+
+# Aptly configuration
+APTLY_ROOT="/var/aptly"
+APTLY_USER="aptly"
+APTLY_DOWNLOAD_CONCURRENCY=4
+
+# GPG Key details (will be auto-generated)
+GPG_KEY_NAME="Aptly Repository Signing Key"
+GPG_KEY_EMAIL="aptly@yourdomain.local"
+GPG_KEY_TYPE="rsa3072"
+GPG_KEY_EXPIRY="2y"
+
+#=============================================================================
+# KEEPALIVED CONFIGURATION
+#=============================================================================
+
+VRRP_ROUTER_ID="51"
+VRRP_PRIORITY_MASTER="101"
+VRRP_PRIORITY_BACKUP="100"
+VRRP_AUTH_TYPE="PASS"
+VRRP_AUTH_PASS="changeMe"
+
+#=============================================================================
+# HAPROXY CONFIGURATION
+#=============================================================================
+
+# Health check settings
+HEALTHCHECK_INTERVAL="5000"  # milliseconds
+HEALTHCHECK_RISE="2"          # successful checks before UP
+HEALTHCHECK_FALL="3"          # failed checks before DOWN
+
+# Backend weights
+APTLY_WEIGHT="100"
+PROXY_WEIGHT="50"
+
+# Timeouts (milliseconds)
+TIMEOUT_CONNECT="10000"
+TIMEOUT_CLIENT="50000"
+TIMEOUT_SERVER="300000"  # 5 minutes for large package downloads
+
+#=============================================================================
+# CRON SCHEDULE
+#=============================================================================
+
+# Daily repository update time (24-hour format)
+UPDATE_HOUR="6"
+UPDATE_MINUTE="0"
+
+# Daily cleanup time (should run after update)
+CLEANUP_HOUR="7"
+CLEANUP_MINUTE="0"
+
+# Number of snapshots to retain
+SNAPSHOT_RETENTION="2"
+
+#=============================================================================
+# LOGGING
+#=============================================================================
+
+APTLY_UPDATE_LOG="/var/log/aptly-update.log"
+APTLY_CLEANUP_LOG="/var/log/aptly-cleanup.log"
+NGINX_ACCESS_LOG="/var/log/nginx/aptly-access.log"
+NGINX_ERROR_LOG="/var/log/nginx/aptly-error.log"
+
+#=============================================================================
+# SYSTEM REQUIREMENTS
+#=============================================================================
+
+# Minimum disk space required (in GB)
+MIN_DISK_SPACE_APTLY="150"
+MIN_DISK_SPACE_HAPROXY="20"
+MIN_DISK_SPACE_PROXY="20"
+
+# Recommended RAM (in GB)
+MIN_RAM_APTLY="8"
+MIN_RAM_HAPROXY="2"
+MIN_RAM_PROXY="2"
+
+#=============================================================================
+# DEPLOYMENT OPTIONS
+#=============================================================================
+
+# Set to "true" to enable, "false" to disable
+ENABLE_SSL="false"           # Future: HTTPS support
+ENABLE_PROMETHEUS="false"    # Future: Prometheus metrics
+ENABLE_EMAIL_ALERTS="false"  # Future: Email notifications on failures
+
+#=============================================================================
+# PROXY FALLBACK CONFIGURATION
+#=============================================================================
+
+# Upstream mirror for proxy fallback
+PROXY_UPSTREAM_MIRROR="archive.ubuntu.com"
+
+#=============================================================================
+# SSH CONFIGURATION (for remote deployment)
+#=============================================================================
+
+SSH_USER="root"
+SSH_KEY="/root/.ssh/id_rsa"
+
+#=============================================================================
+# VALIDATION
+#=============================================================================
+
+# Perform basic validation
+validate_config() {
+    local errors=0
+    
+    # Check required variables
+    [ -z "$VIP" ] && echo "ERROR: VIP not set" && ((errors++))
+    [ -z "$DOMAIN" ] && echo "ERROR: DOMAIN not set" && ((errors++))
+    [ -z "$HAPROXY_MASTER_IP" ] && echo "ERROR: HAPROXY_MASTER_IP not set" && ((errors++))
+    
+    # Validate IP addresses
+    validate_ip() {
+        local ip=$1
+        if ! [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            echo "ERROR: Invalid IP address: $ip"
+            return 1
+        fi
+        return 0
+    }
+    
+    validate_ip "$VIP" || ((errors++))
+    validate_ip "$HAPROXY_MASTER_IP" || ((errors++))
+    validate_ip "$HAPROXY_BACKUP_IP" || ((errors++))
+    
+    if [ $errors -gt 0 ]; then
+        echo "Configuration validation failed with $errors error(s)"
+        return 1
+    fi
+    
+    echo "Configuration validation passed"
+    return 0
+}
+
+# Export all variables
+set -a

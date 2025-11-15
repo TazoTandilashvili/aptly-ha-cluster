@@ -1,0 +1,195 @@
+Aptly HA Cluster - Complete Project Structure
+==============================================
+
+aptly-ha-cluster/
+│
+├── README.md                              # Main project documentation with overview, features, architecture
+├── SUMMARY.md                             # Comprehensive project summary and quick reference
+├── LICENSE                                # MIT License
+├── CONTRIBUTING.md                        # Contribution guidelines and development standards
+├── .gitignore                             # Git ignore rules for sensitive files
+├── init-repo.sh                           # Script to initialize Git repository
+│
+├── config/                                # Configuration Templates
+│   ├── cluster.conf.example              # Main cluster configuration
+│   │                                      # - Network IPs and VIP settings
+│   │                                      # - Mirror sources and schedules
+│   │                                      # - Retention policies
+│   │
+│   ├── aptly.conf.example                # Aptly configuration template
+│   │                                      # - GPG key settings
+│   │                                      # - Repository paths
+│   │                                      # - Download settings
+│   │
+│   ├── haproxy.cfg.example               # HAProxy load balancer configuration
+│   │                                      # - Backend definitions
+│   │                                      # - Health checks
+│   │                                      # - Timeouts and weights
+│   │
+│   └── keepalived-master.conf.example    # Keepalived VRRP configuration
+│                                          # - VIP management
+│                                          # - Priority settings
+│                                          # - Authentication
+│
+├── docs/                                  # Documentation
+│   ├── ha-cluster-setup.md               # Complete HA cluster deployment guide
+│   │                                      # - 7-node architecture setup
+│   │                                      # - Step-by-step instructions
+│   │                                      # - HAProxy + Keepalived config
+│   │                                      # - Aptly node configuration
+│   │                                      # - Proxy node setup
+│   │                                      # - Failover testing procedures
+│   │
+│   ├── client-setup.md                   # Client configuration guide
+│   │                                      # - Automated setup script
+│   │                                      # - Manual configuration steps
+│   │                                      # - GPG key management
+│   │                                      # - Troubleshooting clients
+│   │
+│   └── troubleshooting.md                # Comprehensive troubleshooting guide
+│                                          # - HAProxy issues
+│                                          # - Aptly mirror problems
+│                                          # - GPG signature errors
+│                                          # - Network and failover issues
+│                                          # - Performance tuning
+│                                          # - Recovery procedures
+│
+└── standalone/                            # Single-Node Deployment
+    ├── README.md                          # Standalone deployment overview
+    │                                      # - When to use
+    │                                      # - Requirements
+    │                                      # - Migration to HA
+    │
+    └── deploy.sh                          # Automated deployment script
+                                           # - Installs Aptly + Nginx
+                                           # - Generates GPG keys
+                                           # - Creates mirrors
+                                           # - Syncs packages
+                                           # - Publishes repository
+                                           # - Sets up cron jobs
+                                           # - Creates client script
+
+==============================================
+Total Files: 14
+Total Size: ~118KB
+==============================================
+
+KEY FEATURES:
+=============
+
+1. HIGH AVAILABILITY CLUSTER (7 Nodes)
+   - 2x HAProxy nodes with Keepalived (VIP failover)
+   - 2x Aptly nodes (local mirrors, load balanced)
+   - 2x Nginx proxy nodes (fallback to Ubuntu official)
+   - 1x Virtual IP (single entry point)
+
+2. STANDALONE DEPLOYMENT (1 Node)
+   - Single Aptly server
+   - Quick setup for dev/test
+   - Automated deployment script
+
+3. COMPREHENSIVE DOCUMENTATION
+   - Complete setup guides
+   - Troubleshooting procedures
+   - Client configuration
+   - Best practices
+
+4. AUTOMATION
+   - Daily repository updates (6 AM)
+   - Automatic cleanup (7 AM)
+   - Health monitoring
+   - Client setup scripts
+
+5. MULTI-TIER FAILOVER
+   - Tier 1: Aptly nodes (primary)
+   - Tier 2: Proxy nodes (backup)
+   - Automatic switching
+   - Dual GPG keyring support
+
+DEPLOYMENT OPTIONS:
+===================
+
+Option 1: Standalone (Simple)
+------------------------------
+$ cd standalone
+$ sudo ./deploy.sh
+Time: ~4 hours
+Servers: 1
+Use case: Dev/Test
+
+Option 2: HA Cluster (Production)
+----------------------------------
+$ cp config/cluster.conf.example config/cluster.conf
+$ vim config/cluster.conf
+$ Follow docs/ha-cluster-setup.md
+Time: ~6 hours
+Servers: 7
+Use case: Production
+
+SUPPORTED DISTRIBUTIONS:
+========================
+- Ubuntu 22.04 LTS (Jammy Jellyfish)
+  - jammy (main, universe)
+  - jammy-updates (main, universe)
+  - jammy-security (main, universe)
+
+ARCHITECTURE: amd64 (x86_64)
+
+SYSTEM REQUIREMENTS:
+====================
+
+HAProxy Nodes:
+- CPU: 2 cores
+- RAM: 2GB
+- Disk: 20GB
+
+Aptly Nodes:
+- CPU: 4 cores
+- RAM: 8GB
+- Disk: 150GB (SSD recommended)
+
+Proxy Nodes:
+- CPU: 2 cores
+- RAM: 2GB
+- Disk: 20GB
+
+QUICK START:
+============
+
+1. Clone repository:
+   $ git clone https://github.com/TazoTandilashvili/aptly-ha-cluster.git
+
+2. Choose deployment:
+   - Standalone: cd standalone && sudo ./deploy.sh
+   - HA Cluster: Follow docs/ha-cluster-setup.md
+
+3. Configure clients:
+   $ wget http://repo.example.com/configure-apt-client.sh
+   $ sudo ./configure-apt-client.sh
+
+MAINTENANCE:
+============
+
+Daily Automated:
+- 06:00 AM: Repository sync
+- 07:00 AM: Cleanup old snapshots
+
+Manual Commands:
+- Update: sudo -u aptly /home/aptly/aptly-daily-update.sh
+- List snapshots: sudo -u aptly aptly snapshot list
+- Revert: sudo -u aptly aptly publish switch jammy jammy-DATE-merged
+- Monitor: curl http://repo:8080/stats -u admin:changeme123
+
+MONITORING:
+===========
+- HAProxy Stats: http://repo:8080/stats (admin/changeme123)
+- Logs: /var/log/aptly-update.log
+- Nginx: /var/log/nginx/aptly-access.log
+
+SUPPORT:
+========
+- Documentation: docs/
+- Issues: GitHub Issues
+- Email: support@yourdomain.com
+
+LICENSE: MIT

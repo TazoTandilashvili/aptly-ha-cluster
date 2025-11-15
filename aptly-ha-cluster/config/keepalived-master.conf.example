@@ -1,0 +1,29 @@
+global_defs {
+}
+
+vrrp_script chk_haproxy {
+    script "killall -0 haproxy"
+    interval 2
+    weight 2
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface ens160
+    virtual_router_id 51
+    priority 101
+    unicast_src_ip 10.80.11.141
+    unicast_peer {
+        10.80.11.142
+    }
+    authentication {
+        auth_type PASS
+        auth_pass 1qaz!QAZ
+    }
+    virtual_ipaddress {
+        10.80.11.140/24
+    }
+    track_script {
+        chk_haproxy
+    }
+}

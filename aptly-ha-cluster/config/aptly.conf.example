@@ -1,0 +1,11 @@
+{
+  "rootDir": "/var/aptly",
+  "downloadConcurrency": 4,
+  "architectures": ["amd64"],
+  "downloadSourcePackages": false,
+  "gpgDisableVerify": false,
+  "gpgDisableSign": false,
+  "gpgProvider": "gpg",
+  "gpgKey": "REPLACE_WITH_YOUR_GPG_KEY_ID",
+  "tempDir": "/var/aptly/tmp"
+}
