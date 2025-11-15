@@ -318,19 +318,19 @@ server {
     
     # Serve Ubuntu's official GPG key
     location = /repo-key.gpg {
-        proxy_pass http://ge.archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg;
-        proxy_set_header Host ge.archive.ubuntu.com;
+        proxy_pass http://archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg;
+        proxy_set_header Host archive.ubuntu.com;
     }
     
     location /ubuntu-official-keyring.gpg {
-        proxy_pass http://ge.archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg;
-        proxy_set_header Host ge.archive.ubuntu.com;
+        proxy_pass http://archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg;
+        proxy_set_header Host archive.ubuntu.com;
     }
     
     # Distribution metadata
     location ~ ^/dists/(jammy|jammy-updates|jammy-security)/ {
-        proxy_pass http://ge.archive.ubuntu.com/ubuntu$request_uri;
-        proxy_set_header Host ge.archive.ubuntu.com;
+        proxy_pass http://archive.ubuntu.com/ubuntu$request_uri;
+        proxy_set_header Host archive.ubuntu.com;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_buffering on;
         proxy_connect_timeout 30s;
@@ -339,16 +339,16 @@ server {
     
     # Package pools
     location /pool/ {
-        proxy_pass http://ge.archive.ubuntu.com/ubuntu/pool/;
-        proxy_set_header Host ge.archive.ubuntu.com;
+        proxy_pass http://archive.ubuntu.com/ubuntu/pool/;
+        proxy_set_header Host archive.ubuntu.com;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_buffering on;
     }
     
     # Catch-all
     location / {
-        proxy_pass http://ge.archive.ubuntu.com/ubuntu/;
-        proxy_set_header Host ge.archive.ubuntu.com;
+        proxy_pass http://archive.ubuntu.com/ubuntu/;
+        proxy_set_header Host archive.ubuntu.com;
         proxy_set_header X-Real-IP $remote_addr;
     }
 }

@@ -303,9 +303,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Authors
+## 👥 Author
 
-- **Your Name** - Initial work
+- **Tazo Tandilashvili** - Initial work
 
 ## 🙏 Acknowledgments
 
@@ -318,7 +318,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/TazoTandilashvili/aptly-ha-cluster/issues)
 - **Documentation**: [Wiki](https://github.com/TazoTandilashvili/aptly-ha-cluster/wiki)
-- **Email**: support@yourdomain.com
 
 ## 🗺️ Roadmap
 
